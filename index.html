@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive SEO Strategy Blueprint</title>
+    <!-- Chosen Palette: Serene Professional - Background: #F7F7F7 (Off-white), Text: #333333 (Dark Gray), Primary Accent: #4A90E2 (Calm Blue), Secondary Accent: #F5A623 (Warm Gold) -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard, moving away from the linear report structure. The goal is to allow users to explore SEO concepts thematically. A sticky top navigation provides quick access to core pillars: Foundations (E-E-A-T, Topical Authority), Content Optimization (On-Page, Technical, Multimedia), Authority Building (Backlinks, Competition), Search Engine Comparison, Common Pitfalls, and Measurement/Tools. This task-oriented structure enhances usability by letting users dive into specific areas of interest. Key interactions include tabbed sections for dense information, interactive cards for tactics, a dynamic comparison tool for search engines, and data visualizations for KPIs, making the complex information digestible and engaging. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: E-E-A-T Framework -> Goal: Inform/Organize -> Viz/Method: Interactive Tabbed Cards -> Interaction: Click tabs to reveal specific tactics -> Justification: Breaks down a complex concept into manageable, actionable pieces. (HTML/CSS/JS)
+        - Report Info: Hub and Spoke Model -> Goal: Organize/Explain -> Viz/Method: CSS-based Diagram -> Interaction: Hover to highlight elements -> Justification: Visually represents the architectural concept more effectively than text alone. (HTML/CSS/JS)
+        - Report Info: Search Engine Differences -> Goal: Compare -> Viz/Method: Dynamic Content Blocks -> Interaction: Click buttons to filter and display side-by-side data for Google, Brave, Bing, etc. -> Justification: Allows for direct comparison, making nuanced differences clear. (HTML/CSS/JS)
+        - Report Info: Link Building Techniques -> Goal: Inform -> Viz/Method: Grid of Interactive Cards -> Interaction: Click to flip card and reveal details -> Justification: Gamifies learning and keeps the UI clean. (HTML/CSS/JS)
+        - Report Info: Key Performance Indicators (KPIs) -> Goal: Inform/Relate -> Viz/Method: Radar Chart -> Interaction: View a holistic representation of a healthy SEO profile. -> Justification: Shows the interconnectedness of metrics in a visually compelling way. (Chart.js)
+        - Report Info: Pitfalls -> Goal: Inform/Warn -> Viz/Method: Two-column "Do/Don't" layout with icons -> Interaction: Static but highly scannable -> Justification: Quickly communicates best practices vs. mistakes. (HTML/CSS)
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #F7F7F7;
+            color: #333333;
+        }
+        @import url('https://rsms.me/inter/inter.css');
+        .nav-link {
+            transition: color 0.3s ease, border-bottom-color 0.3s ease, box-shadow 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link:hover, .nav-link.active {
+            color: #4A90E2;
+            border-bottom-color: #4A90E2;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3); /* Blue shadow for active/hover */
+            border-radius: 0.25rem; /* Small rounding for shadow */
+        }
+        .section-title {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: #333333;
+            margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.125rem;
+            color: #555555;
+            max-width: 800px;
+            margin: 0 auto 2.5rem auto;
+        }
+        .card {
+            background-color: white;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(74, 144, 226, 0.2), 0 4px 6px -2px rgba(74, 144, 226, 0.1); /* Enhanced blue shadow */
+        }
+        .tab-button {
+            transition: all 0.3s ease, box-shadow 0.3s ease;
+        }
+        .tab-button:hover:not(.active) {
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2); /* Subtle blue shadow on hover for inactive tabs */
+        }
+        .tab-button.active {
+            background-color: #4A90E2;
+            color: white;
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4); /* Stronger blue shadow for active tabs */
+        }
+        .flip-card { perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
+        .flip-card-back { transform: rotateY(180deg); }
+        html { scroll-behavior: smooth; }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 350px;
+            max-height: 400px;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .animate-init-load {
+            opacity: 0;
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+        }
+
+        /* Hub-Spoke Diagram Specific Styling & Animations */
+        #hub-spoke-diagram {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .hub-element {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 20;
+            animation: fadeInScale 0.8s ease-out forwards;
+            animation-delay: 0.5s;
+        }
+
+        .spoke-line {
+            position: absolute;
+            height: 2px;
+            background-color: #4A90E2;
+            opacity: 0;
+            animation: fadeIn 0.6s ease-out forwards;
+            z-index: 10;
+        }
+
+        .spoke-element {
+            position: absolute;
+            opacity: 0;
+            animation: fadeInScale 0.6s ease-out forwards;
+            z-index: 15;
+        }
+
+        /* Positioning of spokes around the hub */
+        /* Spoke 1 (Top-Right) */
+        .spoke-line.spoke-1 {
+            width: 120px;
+            left: calc(50% + 12px);
+            top: calc(50% - 12px);
+            transform: rotate(-45deg);
+            animation-delay: 1.0s;
+        }
+        .spoke-element.spoke-1 {
+            left: calc(50% + 80px);
+            top: calc(50% - 80px);
+            transform: translate(-50%, -50%);
+            animation-delay: 1.2s;
+        }
+
+        /* Spoke 2 (Bottom-Right) */
+        .spoke-line.spoke-2 {
+            width: 120px;
+            left: calc(50% + 12px);
+            top: calc(50% + 12px);
+            transform: rotate(45deg);
+            animation-delay: 1.4s;
+        }
+        .spoke-element.spoke-2 {
+            left: calc(50% + 80px);
+            top: calc(50% + 80px);
+            transform: translate(-50%, -50%);
+            animation-delay: 1.6s;
+        }
+
+        /* Spoke 3 (Bottom-Left) */
+        .spoke-line.spoke-3 {
+            width: 120px;
+            left: calc(50% - 12px - 100px); /* Adjust start point to extend leftwards */
+            top: calc(50% + 12px);
+            transform: rotate(45deg); /* Adjusted angle for visual consistency */
+            animation-delay: 1.8s;
+        }
+        .spoke-element.spoke-3 {
+            left: calc(50% - 80px);
+            top: calc(50% + 80px);
+            transform: translate(-50%, -50%);
+            animation-delay: 2.0s;
+        }
+
+        /* Spoke 4 (Top-Left) */
+        .spoke-line.spoke-4 {
+            width: 120px;
+            left: calc(50% - 12px - 100px);
+            top: calc(50% - 12px);
+            transform: rotate(-45deg); /* Adjusted angle for visual consistency */
+            animation-delay: 2.2s;
+        }
+        .spoke-element.spoke-4 {
+            left: calc(50% - 80px);
+            top: calc(50% - 80px);
+            transform: translate(-50%, -50%);
+            animation-delay: 2.4s;
+        }
+
+        /* Hero Button specific hover effect */
+        .hero-button {
+            transition: all 0.3s ease;
+        }
+        .hero-button:hover {
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4); /* Strong blue shadow for hero button */
+        }
+
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white/80 backdrop-blur-md sticky top-0 z-50 shadow-sm">
+        <nav class="container mx-auto px-6 py-3">
+            <div class="flex items-center justify-between">
+                <a href="#hero" class="text-xl font-bold text-[#333333]">SEO Blueprint</a>
+                <div class="hidden md:flex items-center space-x-6">
+                    <a href="#foundations" class="nav-link px-3 py-2">Foundations</a>
+                    <a href="#optimization" class="nav-link px-3 py-2">Optimization</a>
+                    <a href="#authority" class="nav-link px-3 py-2">Authority</a>
+                    <a href="#engines" class="nav-link px-3 py-2">Engines</a>
+                    <a href="#pitfalls" class="nav-link px-3 py-2">Pitfalls</a>
+                    <a href="#measurement" class="nav-link px-3 py-2">Measurement</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-700 focus:outline-none">
+                        <span class="text-2xl">&#9776;</span>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden mt-4 space-y-2">
+                 <a href="#foundations" class="block nav-link px-3 py-2">Foundations</a>
+                 <a href="#optimization" class="block nav-link px-3 py-2">Optimization</a>
+                 <a href="#authority" class="block nav-link px-3 py-2">Authority</a>
+                 <a href="#engines" class="block nav-link px-3 py-2">Engines</a>
+                 <a href="#pitfalls" class="block nav-link px-3 py-2">Pitfalls</a>
+                 <a href="#measurement" class="block nav-link px-3 py-2">Measurement</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section id="hero" class="py-20 md:py-32 text-center bg-white">
+            <div class="container mx-auto px-6">
+                <h1 class="text-4xl md:text-6xl font-extrabold text-[#333333] mb-4 animate-init-load" style="animation-delay: 0.2s;">Mastering Modern SEO</h1>
+                <p class="text-lg md:text-xl text-[#555555] max-w-3xl mx-auto animate-init-load" style="animation-delay: 0.4s;">An interactive guide to the future-proof content strategy. Explore the pillars of search excellence, from user-first principles to data-driven optimization.</p>
+                 <a href="#foundations" class="mt-8 inline-block bg-[#4A90E2] text-white font-bold py-3 px-8 rounded-full hover:bg-blue-600 hero-button animate-init-load" style="animation-delay: 0.6s;">Start Exploring</a>
+            </div>
+        </section>
+
+        <section id="foundations" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title animate-init-load" style="animation-delay: 0.8s;">Foundational Approach</h2>
+                <p class="section-subtitle animate-init-load" style="animation-delay: 1.0s;">A successful SEO strategy is built on two core pillars: demonstrating genuine credibility through E-E-A-T and establishing comprehensive knowledge with a structured content architecture. This section explores how to master these foundational elements.</p>
+                
+                <div class="grid md:grid-cols-2 gap-12 items-center text-left">
+                    <div class="card p-8 animate-init-load" style="animation-delay: 1.2s;">
+                        <h3 class="text-2xl font-bold mb-4">The Cornerstone of E-E-A-T</h3>
+                        <p class="mb-6 text-gray-600">Google's quality framework, E-E-A-T, is not a suggestion—it's a requirement. It stands for Experience, Expertise, Authoritativeness, and Trustworthiness. Click the tabs below to see actionable tactics for each component.</p>
+                        <div id="eeat-tabs" class="flex flex-wrap gap-2 mb-4">
+                            <button data-eeat="experience" class="eeat-tab-button tab-button text-sm font-semibold px-4 py-2 rounded-full bg-gray-200 active">Experience</button>
+                            <button data-eeat="expertise" class="eeat-tab-button tab-button text-sm font-semibold px-4 py-2 rounded-full bg-gray-200">Expertise</button>
+                            <button data-eeat="authoritativeness" class="eeat-tab-button tab-button text-sm font-semibold px-4 py-2 rounded-full bg-gray-200">Authoritativeness</button>
+                            <button data-eeat="trustworthiness" class="eeat-tab-button tab-button text-sm font-semibold px-4 py-2 rounded-full bg-gray-200">Trustworthiness</button>
+                        </div>
+                        <div id="eeat-content" class="bg-gray-50 p-6 rounded-lg min-h-[200px]"></div>
+                    </div>
+
+                    <div class="card p-8 animate-init-load" style="animation-delay: 1.4s;">
+                        <h3 class="text-2xl font-bold mb-4">Topical Authority: The Hub & Spoke Model</h3>
+                        <p class="mb-6 text-gray-600">Move beyond single keywords. Build authority by creating interconnected content clusters. The "Hub and Spoke" model organizes content to signal deep expertise to search engines and keep users engaged.</p>
+                        <div id="hub-spoke-diagram" class="relative flex items-center justify-center p-4 h-64">
+                            <div class="hub-element absolute bg-[#4A90E2] text-white w-24 h-24 rounded-full flex items-center justify-center text-center font-bold text-sm z-10">Pillar Page (Hub)</div>
+                            <div class="spoke-line spoke-1"></div>
+                            <div class="spoke-element spoke-1 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                            <div class="spoke-line spoke-2"></div>
+                            <div class="spoke-element spoke-2 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                            <div class="spoke-line spoke-3"></div>
+                            <div class="spoke-element spoke-3 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                             <div class="spoke-line spoke-4"></div>
+                            <div class="spoke-element spoke-4 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="optimization" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Core Content Optimization</h2>
+                <p class="section-subtitle">Great content needs a solid technical and structural foundation to perform. This section covers the essential optimizations—from on-page elements and site performance to engaging multimedia—that make your content visible, accessible, and impactful.</p>
+                
+                <div class="max-w-4xl mx-auto">
+                    <div class="mb-6 flex justify-center border-b border-gray-300">
+                        <button data-opt="onpage" class="opt-tab-button px-6 py-3 text-lg font-semibold border-b-4 border-transparent hover:border-[#4A90E2] active">On-Page</button>
+                        <button data-opt="technical" class="opt-tab-button px-6 py-3 text-lg font-semibold border-b-4 border-transparent hover:border-[#4A90E2]">Technical</button>
+                        <button data-opt="multimedia" class="opt-tab-button px-6 py-3 text-lg font-semibold border-b-4 border-transparent hover:border-[#4A90E2]">Multimedia</button>
+                    </div>
+                    <div id="optimization-content" class="text-left"></div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="authority" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Amplification & Authority</h2>
+                <p class="section-subtitle">On-page excellence is only half the battle. True authority is built through off-page signals that tell search engines your content is credible and respected. Master the art of ethical backlink acquisition and learn from your competition.</p>
+
+                <h3 class="text-2xl font-bold mb-8">White-Hat Backlink Strategies</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <!-- Link building techniques will be inserted here by JS -->
+                </div>
+            </div>
+        </section>
+
+        <section id="engines" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Navigating Diverse Search Engines</h2>
+                <p class="section-subtitle">While Google is the titan, a comprehensive strategy considers the unique philosophies of other major platforms. Use the buttons below to compare the key ranking factors and optimization nuances for Google, Brave, Bing, and DuckDuckGo.</p>
+                <div class="flex flex-wrap justify-center gap-4 mb-8">
+                    <button data-engine="google" class="engine-button tab-button text-base font-semibold px-5 py-2.5 rounded-full bg-gray-200 active">Google</button>
+                    <button data-engine="brave" class="engine-button tab-button text-base font-semibold px-5 py-2.5 rounded-full bg-gray-200">Brave</button>
+                    <button data-engine="bing" class="engine-button tab-button text-base font-semibold px-5 py-2.5 rounded-full bg-gray-200">Bing</button>
+                    <button data-engine="duckduckgo" class="engine-button tab-button text-base font-semibold px-5 py-2.5 rounded-full bg-gray-200">DuckDuckGo</button>
+                </div>
+                <div id="engine-content" class="card max-w-4xl mx-auto p-8 text-left transition-opacity duration-500">
+                    <!-- Engine details will be inserted here by JS -->
+                </div>
+            </div>
+        </section>
+
+        <section id="pitfalls" class="py-16 md:py-24">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Pitfalls to Avoid</h2>
+                <p class="section-subtitle">Knowing what *not* to do is as important as knowing what to do. Steering clear of these common mistakes will safeguard your site's long-term health and prevent devastating ranking penalties.</p>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Pitfalls will be inserted here by JS -->
+                </div>
+            </div>
+        </section>
+        
+        <section id="measurement" class="py-16 md:py-24 bg-white">
+            <div class="container mx-auto px-6 text-center">
+                <h2 class="section-title">Measuring Success & Continuous Improvement</h2>
+                <p class="section-subtitle">A successful SEO strategy is data-driven and dynamic. This section highlights the key performance indicators (KPIs) to track, the essential tools for analysis, and how to implement an iterative content audit process for continuous growth.</p>
+                <div class="grid lg:grid-cols-2 gap-12 items-center">
+                    <div class="card p-8">
+                        <h3 class="text-2xl font-bold mb-4">Visualizing Key KPIs</h3>
+                        <p class="mb-6 text-gray-600">This radar chart illustrates a hypothetically strong SEO profile across key metrics. The goal is to achieve a balanced, expansive shape, indicating solid performance in all critical areas, from traffic and visibility to user engagement and authority.</p>
+                         <div class="chart-container">
+                            <canvas id="kpiChart"></canvas>
+                        </div>
+                    </div>
+                    <div class="text-left space-y-4">
+                        <div class="card p-6">
+                           <h4 class="font-bold text-lg mb-2 text-[#4A90E2]">Essential Tools</h4>
+                           <p class="text-gray-600">Leverage tools like <span class="font-semibold">Google Search Console</span> for performance data, <span class="font-semibold">Google Analytics 4</span> for user behavior, and advanced platforms like <span class="font-semibold">Semrush</span> for competitive analysis and audits.</p>
+                        </div>
+                         <div class="card p-6">
+                           <h4 class="font-bold text-lg mb-2 text-[#F5A623]">The Content Audit Cycle</h4>
+                           <p class="text-gray-600">Regularly audit your content: <span class="font-semibold">1. Set Goals</span> (e.g., improve rankings), <span class="font-semibold">2. Collect Data</span> (URLs & metrics), <span class="font-semibold">3. Analyze Performance</span> (identify winners & losers), and <span class="font-semibold">4. Create an Action Plan</span> (Keep, Update, or Delete).</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-[#333333] text-white">
+        <div class="container mx-auto px-6 py-8 text-center">
+            <p>&copy; 2025 Interactive SEO Blueprint. An educational tool for mastering modern search strategy.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            const eeatData = {
+                experience: {
+                    title: 'Demonstrating Experience',
+                    points: [
+                        'Showcase author bios with personal involvement.',
+                        'Share original photos, videos, and case studies.',
+                        'Feature user-generated content like testimonials.',
+                        'Use first-person pronouns where appropriate to signal authenticity.'
+                    ]
+                },
+                expertise: {
+                    title: 'Showcasing Expertise',
+                    points: [
+                        'Create in-depth, accurate content that goes beyond the surface.',
+                        'Highlight professional credentials and certifications.',
+                        'Include "Reviewed by" disclaimers from qualified experts.',
+                        'Provide unique insights that only an expert would know.'
+                    ]
+                },
+                authoritativeness: {
+                    title: 'Building Authoritativeness',
+                    points: [
+                        'Earn authoritative backlinks from reputable sites.',
+                        'Secure mentions in industry publications and directories.',
+                        'List awards, speaking engagements, and media appearances.',
+                        'Publish multiple forms of content on a topic to show breadth.'
+                    ]
+                },
+                trustworthiness: {
+                    title: 'Establishing Trustworthiness',
+                    points: [
+                        'Secure your website with HTTPS.',
+                        'Provide clear contact information and transparent policies.',
+                        'Display trust badges and positive third-party reviews.',
+                        'Ensure content is error-free, factual, and cites sources.'
+                    ]
+                }
+            };
+
+            const eeatTabs = document.getElementById('eeat-tabs');
+            const eeatContent = document.getElementById('eeat-content');
+
+            function updateEeatContent(topic) {
+                const data = eeatData[topic];
+                eeatContent.innerHTML = `
+                    <h4 class="text-xl font-bold mb-3 text-[#4A90E2]">${data.title}</h4>
+                    <ul class="space-y-2 list-disc list-inside text-gray-700">
+                        ${data.points.map(point => `<li>${point}</li>`).join('')}
+                    </ul>
+                `;
+                document.querySelectorAll('.eeat-tab-button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.eeat === topic);
+                });
+            }
+
+            eeatTabs.addEventListener('click', (e) => {
+                if (e.target.matches('.eeat-tab-button')) {
+                    updateEeatContent(e.target.dataset.eeat);
+                }
+            });
+
+            updateEeatContent('experience');
+
+            const optimizationData = {
+                onpage: {
+                    title: "On-Page SEO Essentials",
+                    description: "Optimize individual pages to earn more relevant traffic. It's about making your content understandable to both users and search engines.",
+                    items: [
+                        { title: 'Title Tags & Meta Descriptions', text: 'Craft compelling, concise titles (<60 chars) and metas (<160 chars) with your primary keyword to boost click-through rates from search results.' },
+                        { title: 'Heading Hierarchy (H1-H6)', text: 'Use a logical heading structure (one H1 per page, followed sequentially by H2s, H3s) to improve readability and signal content structure.' },
+                        { title: 'Clean URL Structures', text: 'Create short, descriptive URLs with keywords. Use hyphens to separate words and avoid long, random identifiers.' },
+                        { title: 'Natural Keyword & Entity Usage', text: 'Integrate keywords, synonyms, and related terms naturally. Avoid "keyword stuffing" which harms readability and can lead to penalties.' }
+                    ]
+                },
+                technical: {
+                    title: "Technical Foundations",
+                    description: "A robust technical foundation ensures your content is discoverable, accessible, and performs optimally for all users on any device.",
+                     items: [
+                        { title: 'Mobile-First Design & Page Speed', text: 'Your site must be responsive and load quickly. Google prioritizes fast, mobile-friendly sites. Monitor Core Web Vitals (LCP, CLS).' },
+                        { title: 'Advanced Image Optimization', text: 'Use next-gen formats (WebP/AVIF), compress images (<100KB), and implement lazy loading for images below the fold. Always use descriptive alt text.' },
+                        { title: 'Schema Markup (JSON-LD)', text: 'Implement structured data to help search engines understand your content. This can lead to rich snippets in search results, boosting visibility.' },
+                        { title: 'Content Consistency', text: 'Ensure your mobile site has the same primary content, metadata, and alt text as the desktop version to comply with mobile-first indexing.' }
+                    ]
+                },
+                multimedia: {
+                    title: "Multimedia & Interactive Content",
+                    description: "Engage users and signal value to search engines by integrating rich media. This reduces bounce rates and increases dwell time.",
+                     items: [
+                        { title: 'Strategic Video Integration', text: 'Use videos to explain complex topics. They hold user interest far more effectively than text alone and are highly shareable.' },
+                        { title: 'Data Visualization & Infographics', text: 'Transform complex data into easily digestible charts and infographics. This makes content more shareable and likely to earn backlinks.' },
+                        { title: 'Interactive Elements', text: 'Leverage quizzes, calculators, and polls to require active user participation. This offers personalized value and deepens engagement.' },
+                        { title: 'Originality is Key', text: 'Avoid excessive stock photography. Use original, high-quality photos and videos to demonstrate genuine first-hand experience (a key part of E-E-A-T).' }
+                    ]
+                }
+            };
+            
+            const optimizationContent = document.getElementById('optimization-content');
+            function updateOptimizationContent(topic) {
+                const data = optimizationData[topic];
+                optimizationContent.innerHTML = `
+                    <div class="bg-gray-50 p-8 rounded-lg">
+                        <h3 class="text-2xl font-bold mb-2 text-[#4A90E2]">${data.title}</h3>
+                        <p class="mb-6 text-gray-600">${data.description}</p>
+                        <div class="space-y-4">
+                            ${data.items.map(item => `
+                                <div class="bg-white p-4 rounded shadow-sm">
+                                    <h4 class="font-bold text-lg text-gray-800">${item.title}</h4>
+                                    <p class="text-gray-600">${item.text}</p>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>`;
+                 document.querySelectorAll('.opt-tab-button').forEach(btn => {
+                    const isActive = btn.dataset.opt === topic;
+                    btn.classList.toggle('active', isActive);
+                    btn.classList.toggle('text-[#4A90E2]', isActive);
+                    btn.classList.toggle('border-[#4A90E2]', isActive);
+                    btn.classList.toggle('text-gray-600', !isActive);
+                });
+            }
+             document.querySelector('.opt-tab-button').parentElement.addEventListener('click', e => {
+                if(e.target.matches('.opt-tab-button')) {
+                    updateOptimizationContent(e.target.dataset.opt);
+                }
+            });
+
+            updateOptimizationContent('onpage');
+
+            const linkBuildingTechniques = [
+                { title: 'Skyscraper Content', text: 'Find top-ranking content, create a version that is 5-10x better, then reach out to sites linking to the original.' },
+                { title: 'Broken Link Building', text: 'Find broken links on relevant sites, create replacement content, and suggest they link to your new resource.' },
+                { title: 'Resource Page Links', text: 'Pitch your high-quality, informative guides for inclusion on curated industry resource pages.' },
+                { title: 'Unique Data Studies', text: 'Publish proprietary research or unique statistical analyses that others will want to cite and link to.' },
+                { title: 'Unlinked Mentions', text: 'Monitor for mentions of your brand that don’t link to you, and politely request that a link be added.' },
+                { title: 'Guest Blogging', text: 'Write high-quality articles for reputable, relevant websites in your niche to earn contextual backlinks.' },
+                { title: 'Ultimate Guides', text: 'Create comprehensive, definitive resources that cover a topic so thoroughly they become the go-to reference.' },
+                { title: 'Interactive Content', text: 'Develop engaging tools like calculators or quizzes that are inherently valuable and shareable, attracting natural links.' }
+            ];
+
+            const authoritySection = document.querySelector('#authority .grid');
+            authoritySection.innerHTML = linkBuildingTechniques.map(tech => `
+                <div class="flip-card h-48">
+                    <div class="flip-card-inner card">
+                        <div class="flip-card-front bg-white rounded-lg">
+                            <h4 class="text-xl font-bold text-center">${tech.title}</h4>
+                        </div>
+                        <div class="flip-card-back bg-[#4A90E2] text-white rounded-lg text-sm">
+                            <p>${tech.text}</p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            const engineData = {
+                google: {
+                    name: "Google",
+                    philosophy: "User-first, helpful content, and E-E-A-T (Experience, Expertise, Authoritativeness, Trustworthiness).",
+                    factors: ["Deep E-E-A-T signals", "Site-wide quality", "Mobile-first indexing", "Page speed (Core Web Vitals)", "Quality backlinks"]
+                },
+                brave: {
+                    name: "Brave Search",
+                    philosophy: "Privacy-first, user control, and an independent index. No user tracking or personalization.",
+                    factors: ["Content relevance & quality", "Recency", "Clear structure for AI Summarizer", "Domain authority", "User-controlled Rerank & Goggles"]
+                },
+                bing: {
+                    name: "Bing",
+                    philosophy: "Focus on comprehensive, relevant, and credible results with strong AI integration.",
+                    factors: ["Quality & Credibility (QC)", "User engagement signals", "Content freshness", "Authority & transparency of sources", "Page load time"]
+                },
+                duckduckgo: {
+                    name: "DuckDuckGo",
+                    philosophy: "Unwavering commitment to privacy, aggregating results from 400+ sources (including Bing).",
+                    factors: ["Strong Bing optimization", "Mobile-friendliness", "Backlinks & local citations (NAP)", "Schema for 'Instant Answers'", "HTTPS for security"]
+                }
+            };
+            const engineContent = document.getElementById('engine-content');
+            
+            function updateEngineContent(engine) {
+                const data = engineData[engine];
+                engineContent.style.opacity = 0;
+                setTimeout(() => {
+                     engineContent.innerHTML = `
+                        <h3 class="text-3xl font-bold mb-4 text-[#4A90E2]">${data.name}</h3>
+                        <p class="italic text-gray-700 mb-6"><strong>Core Philosophy:</strong> ${data.philosophy}</p>
+                        <h4 class="text-xl font-semibold mb-3">Key Ranking Factors:</h4>
+                        <ul class="space-y-2 list-disc list-inside text-gray-600">
+                             ${data.factors.map(factor => `<li>${factor}</li>`).join('')}
+                        </ul>
+                    `;
+                    engineContent.style.opacity = 1;
+                }, 300);
+
+                document.querySelectorAll('.engine-button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.engine === engine);
+                });
+            }
+             document.querySelector('#engines .flex').addEventListener('click', e => {
+                if(e.target.matches('.engine-button')) {
+                    updateEngineContent(e.target.dataset.engine);
+                }
+            });
+            updateEngineContent('google');
+            
+            const pitfallsData = [
+                { icon: '&#10060;', title: 'Keyword Stuffing', text: 'Excessive, unnatural keyword use harms readability and invites penalties.' },
+                { icon: '&#10060;', title: 'Thin/Duplicate Content', text: 'Content without value confuses search engines and weakens authority.' },
+                { icon: '&#10060;', title: 'Ignoring Mobile', text: 'A poor mobile experience is a critical failure with mobile-first indexing.' },
+                { icon: '&#10060;', title: 'Slow Page Speed', text: 'Slow sites frustrate users and are penalized in rankings.' },
+                { icon: '&#10060;', title: 'Poor Internal Linking', text: 'Disjointed linking hinders crawlers and confuses users.' },
+                { icon: '&#10060;', title: 'AI Content Without Oversight', text: 'Relying on AI without human expertise fails E-E-A-T and helpfulness tests.' }
+            ];
+
+            const pitfallsSection = document.querySelector('#pitfalls .grid');
+            pitfallsSection.innerHTML = pitfallsData.map(pitfall => `
+                <div class="card p-6 text-left">
+                    <div class="flex items-center mb-3">
+                        <span class="text-2xl mr-4 text-red-500">${pitfall.icon}</span>
+                        <h4 class="text-xl font-bold">${pitfall.title}</h4>
+                    </div>
+                    <p class="text-gray-600">${pitfall.text}</p>
+                </div>
+            `).join('');
+
+            const kpiCtx = document.getElementById('kpiChart').getContext('2d');
+            new Chart(kpiCtx, {
+                type: 'radar',
+                data: {
+                    labels: ['Organic Traffic', 'Search Visibility', 'User Engagement', 'Backlink Quality', 'Conversion Rate', 'Topical Authority'],
+                    datasets: [{
+                        label: 'Strong SEO Profile',
+                        data: [85, 90, 75, 80, 70, 95],
+                        backgroundColor: 'rgba(74, 144, 226, 0.2)',
+                        borderColor: 'rgba(74, 144, 226, 1)',
+                        pointBackgroundColor: 'rgba(74, 144, 226, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(74, 144, 226, 1)'
+                    }]
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: { color: 'rgba(0, 0, 0, 0.1)' },
+                            grid: { color: 'rgba(0, 0, 0, 0.1)' },
+                            pointLabels: {
+                                font: { size: 12, weight: 'bold' },
+                                color: '#555'
+                            },
+                            ticks: {
+                                backdropColor: 'rgba(247, 247, 247, 1)',
+                                color: '#888',
+                                stepSize: 20
+                            },
+                            min: 0,
+                            max: 100
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                            labels: { font: { size: 14 } }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.r !== null) {
+                                        label += context.parsed.r + '%';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+             const navLinks = document.querySelectorAll('.nav-link');
+             const sections = document.querySelectorAll('main section');
+
+             window.addEventListener('scroll', () => {
+                 let current = '';
+                 sections.forEach(section => {
+                     const sectionTop = section.offsetTop;
+                     if (pageYOffset >= sectionTop - 100) {
+                         current = section.getAttribute('id');
+                     }
+                 });
+
+                 navLinks.forEach(link => {
+                     link.classList.remove('active');
+                     if (link.getAttribute('href') === `#${current}`) {
+                         link.classList.add('active');
+                     }
+                 });
+             });
+        });
+    </script>
+</body>
+</html>
