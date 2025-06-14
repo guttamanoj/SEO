@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive SEO Strategy Blueprint</title>
+    <title>Interactive SEO Strategy Blueprint: Master Modern Search Engine Optimization & Content Ranking</title>
     <!-- Chosen Palette: Serene Professional - Background: #F7F7F7 (Off-white), Text: #333333 (Dark Gray), Primary Accent: #4A90E2 (Calm Blue), Secondary Accent: #F5A623 (Warm Gold) -->
-    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard, moving away from the linear report structure. The goal is to allow users to explore SEO concepts thematically. A sticky top navigation provides quick access to core pillars: Foundations (E-E-A-T, Topical Authority), Content Optimization (On-Page, Technical, Multimedia), Authority Building (Backlinks, Competition), Search Engine Comparison, Common Pitfalls, and Measurement/Tools. This task-oriented structure enhances usability by letting users dive into specific areas of interest. Key interactions include tabbed sections for dense information, interactive cards for tactics, a dynamic comparison tool for search engines, and data visualizations for KPIs, making the complex information digestible and engaging. -->
+    <!-- Application Structure Plan: The SPA is designed as an interactive dashboard, moving away from the linear report structure. The goal to allow users to explore SEO concepts thematically. A sticky top navigation provides quick access to core pillars: Foundations (E-E-A-T, Topical Authority), Content Optimization (On-Page, Technical, Multimedia), Authority Building (Backlinks, Competition), Search Engine Comparison, Common Pitfalls, and Measurement/Tools. This task-oriented structure enhances usability by letting users dive into specific areas of interest. Key interactions include tabbed sections for dense information, interactive cards for tactics, a dynamic comparison tool for search engines, and data visualizations for KPIs, making the complex information digestible and engaging. -->
     <!-- Visualization & Content Choices: 
         - Report Info: E-E-A-T Framework -> Goal: Inform/Organize -> Viz/Method: Interactive Tabbed Cards -> Interaction: Click tabs to reveal specific tactics -> Justification: Breaks down a complex concept into manageable, actionable pieces. (HTML/CSS/JS)
         - Report Info: Hub and Spoke Model -> Goal: Organize/Explain -> Viz/Method: CSS-based Diagram -> Interaction: Hover to highlight elements -> Justification: Visually represents the architectural concept more effectively than text alone. (HTML/CSS/JS)
@@ -31,8 +31,8 @@
         .nav-link:hover, .nav-link.active {
             color: #4A90E2;
             border-bottom-color: #4A90E2;
-            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3); /* Blue shadow for active/hover */
-            border-radius: 0.25rem; /* Small rounding for shadow */
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.3);
+            border-radius: 0.25rem;
         }
         .section-title {
             font-size: 2.25rem;
@@ -54,21 +54,22 @@
         }
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 10px 15px -3px rgba(74, 144, 226, 0.2), 0 4px 6px -2px rgba(74, 144, 226, 0.1); /* Enhanced blue shadow */
+            box-shadow: 0 10px 15px -3px rgba(74, 144, 226, 0.2), 0 4px 6px -2px rgba(74, 144, 226, 0.1);
         }
         .tab-button {
             transition: all 0.3s ease, box-shadow 0.3s ease;
         }
         .tab-button:hover:not(.active) {
-            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2); /* Subtle blue shadow on hover for inactive tabs */
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.2);
         }
         .tab-button.active {
             background-color: #4A90E2;
             color: white;
-            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4); /* Stronger blue shadow for active tabs */
+            box-shadow: 0 4px 12px rgba(74, 144, 226, 0.4);
         }
         .flip-card { perspective: 1000px; }
         .flip-card-inner { position: relative; width: 100%; height: 100%; transition: transform 0.6s; transform-style: preserve-3d; }
+        .flip-card.is-flipped .flip-card-inner { transform: rotateY(180deg); } /* Added for click/touch */
         .flip-card:hover .flip-card-inner { transform: rotateY(180deg); }
         .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; display: flex; align-items: center; justify-content: center; padding: 1.5rem; }
         .flip-card-back { transform: rotateY(180deg); }
@@ -134,12 +135,22 @@
 
         .hub-element {
             position: absolute;
+            width: 80px; /* Smaller default for mobile */
+            height: 80px;
+            font-size: 0.75rem; /* Smaller font */
             left: 50%;
             top: 50%;
             transform: translate(-50%, -50%);
             z-index: 20;
             animation: fadeInScale 0.8s ease-out forwards;
             animation-delay: 0.5s;
+        }
+        @media (min-width: 768px) {
+            .hub-element {
+                width: 96px; /* md:w-24 */
+                height: 96px; /* md:h-24 */
+                font-size: 0.875rem; /* md:text-sm */
+            }
         }
 
         .spoke-line {
@@ -153,70 +164,117 @@
 
         .spoke-element {
             position: absolute;
+            width: 64px; /* Smaller default for mobile */
+            height: 64px;
+            font-size: 0.625rem; /* Smaller font */
             opacity: 0;
             animation: fadeInScale 0.6s ease-out forwards;
             z-index: 15;
+            transform: translate(-50%, -50%); /* Centering relative to its own size */
+        }
+        @media (min-width: 768px) {
+            .spoke-element {
+                width: 80px; /* md:w-20 */
+                height: 80px; /* md:h-20 */
+                font-size: 0.75rem; /* md:text-xs */
+            }
         }
 
-        /* Positioning of spokes around the hub */
+        /* Positioning of spokes around the hub - Responsive Adjustments */
         /* Spoke 1 (Top-Right) */
         .spoke-line.spoke-1 {
-            width: 120px;
-            left: calc(50% + 12px);
-            top: calc(50% - 12px);
+            width: 90px; /* Smaller default */
+            left: calc(50% + 8px);
+            top: calc(50% - 8px);
             transform: rotate(-45deg);
             animation-delay: 1.0s;
         }
         .spoke-element.spoke-1 {
-            left: calc(50% + 80px);
-            top: calc(50% - 80px);
-            transform: translate(-50%, -50%);
+            left: calc(50% + 50px); /* Adjust offset for mobile */
+            top: calc(50% - 50px);
             animation-delay: 1.2s;
         }
 
         /* Spoke 2 (Bottom-Right) */
         .spoke-line.spoke-2 {
-            width: 120px;
-            left: calc(50% + 12px);
-            top: calc(50% + 12px);
+            width: 90px; /* Smaller default */
+            left: calc(50% + 8px);
+            top: calc(50% + 8px);
             transform: rotate(45deg);
             animation-delay: 1.4s;
         }
         .spoke-element.spoke-2 {
-            left: calc(50% + 80px);
-            top: calc(50% + 80px);
-            transform: translate(-50%, -50%);
+            left: calc(50% + 50px); /* Adjust offset for mobile */
+            top: calc(50% + 50px);
             animation-delay: 1.6s;
         }
 
         /* Spoke 3 (Bottom-Left) */
         .spoke-line.spoke-3 {
-            width: 120px;
-            left: calc(50% - 12px - 100px); /* Adjust start point to extend leftwards */
-            top: calc(50% + 12px);
-            transform: rotate(45deg); /* Adjusted angle for visual consistency */
+            width: 90px; /* Smaller default */
+            left: calc(50% - 8px - 80px); /* Adjust offset for mobile */
+            top: calc(50% + 8px);
+            transform: rotate(45deg);
             animation-delay: 1.8s;
         }
         .spoke-element.spoke-3 {
-            left: calc(50% - 80px);
-            top: calc(50% + 80px);
-            transform: translate(-50%, -50%);
+            left: calc(50% - 50px); /* Adjust offset for mobile */
+            top: calc(50% + 50px);
             animation-delay: 2.0s;
         }
 
         /* Spoke 4 (Top-Left) */
         .spoke-line.spoke-4 {
-            width: 120px;
-            left: calc(50% - 12px - 100px);
-            top: calc(50% - 12px);
-            transform: rotate(-45deg); /* Adjusted angle for visual consistency */
+            width: 90px; /* Smaller default */
+            left: calc(50% - 8px - 80px); /* Adjust offset for mobile */
+            top: calc(50% - 8px);
+            transform: rotate(-45deg);
             animation-delay: 2.2s;
         }
         .spoke-element.spoke-4 {
-            left: calc(50% - 80px);
-            top: calc(50% - 80px);
-            transform: translate(-50%, -50%);
+            left: calc(50% - 50px); /* Adjust offset for mobile */
+            top: calc(50% - 50px);
             animation-delay: 2.4s;
+        }
+
+        /* Desktop offsets for Spoke Lines/Elements */
+        @media (min-width: 768px) {
+            .spoke-line.spoke-1 {
+                width: 120px;
+                left: calc(50% + 12px);
+                top: calc(50% - 12px);
+            }
+            .spoke-element.spoke-1 {
+                left: calc(50% + 80px);
+                top: calc(50% - 80px);
+            }
+            .spoke-line.spoke-2 {
+                width: 120px;
+                left: calc(50% + 12px);
+                top: calc(50% + 12px);
+            }
+            .spoke-element.spoke-2 {
+                left: calc(50% + 80px);
+                top: calc(50% + 80px);
+            }
+            .spoke-line.spoke-3 {
+                width: 120px;
+                left: calc(50% - 12px - 100px);
+                top: calc(50% + 12px);
+            }
+            .spoke-element.spoke-3 {
+                left: calc(50% - 80px);
+                top: calc(50% + 80px);
+            }
+            .spoke-line.spoke-4 {
+                width: 120px;
+                left: calc(50% - 12px - 100px);
+                top: calc(50% - 12px);
+            }
+            .spoke-element.spoke-4 {
+                left: calc(50% - 80px);
+                top: calc(50% - 80px);
+            }
         }
 
         /* Hero Button specific hover effect */
@@ -224,7 +282,7 @@
             transition: all 0.3s ease;
         }
         .hero-button:hover {
-            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4); /* Strong blue shadow for hero button */
+            box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
         }
 
     </style>
@@ -291,15 +349,15 @@
                         <h3 class="text-2xl font-bold mb-4">Topical Authority: The Hub & Spoke Model</h3>
                         <p class="mb-6 text-gray-600">Move beyond single keywords. Build authority by creating interconnected content clusters. The "Hub and Spoke" model organizes content to signal deep expertise to search engines and keep users engaged.</p>
                         <div id="hub-spoke-diagram" class="relative flex items-center justify-center p-4 h-64">
-                            <div class="hub-element absolute bg-[#4A90E2] text-white w-24 h-24 rounded-full flex items-center justify-center text-center font-bold text-sm z-10">Pillar Page (Hub)</div>
+                            <div class="hub-element absolute bg-[#4A90E2] text-white rounded-full flex items-center justify-center text-center font-bold">Pillar Page (Hub)</div>
                             <div class="spoke-line spoke-1"></div>
-                            <div class="spoke-element spoke-1 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                            <div class="spoke-element spoke-1 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-center font-semibold">Subtopic (Spoke)</div>
                             <div class="spoke-line spoke-2"></div>
-                            <div class="spoke-element spoke-2 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                            <div class="spoke-element spoke-2 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-center font-semibold">Subtopic (Spoke)</div>
                             <div class="spoke-line spoke-3"></div>
-                            <div class="spoke-element spoke-3 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                            <div class="spoke-element spoke-3 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-center font-semibold">Subtopic (Spoke)</div>
                              <div class="spoke-line spoke-4"></div>
-                            <div class="spoke-element spoke-4 bg-white border-2 border-gray-400 w-20 h-20 rounded-full flex items-center justify-center text-center text-xs font-semibold">Subtopic (Spoke)</div>
+                            <div class="spoke-element spoke-4 bg-white border-2 border-gray-400 rounded-full flex items-center justify-center text-center font-semibold">Subtopic (Spoke)</div>
                         </div>
                     </div>
                 </div>
@@ -554,6 +612,13 @@
                     </div>
                 </div>
             `).join('');
+
+            // Add click listener for flip cards on touch devices
+            document.querySelectorAll('.flip-card').forEach(card => {
+                card.addEventListener('click', () => {
+                    card.classList.toggle('is-flipped');
+                });
+            });
 
             const engineData = {
                 google: {
