@@ -13,6 +13,8 @@
         - Report Info: Link Building Techniques -> Goal: Inform -> Viz/Method: Grid of Interactive Cards -> Interaction: Click to flip card and reveal details -> Justification: Gamifies learning and keeps the UI clean. (HTML/CSS/JS)
         - Report Info: Key Performance Indicators (KPIs) -> Goal: Inform/Relate -> Viz/Method: Radar Chart -> Interaction: View a holistic representation of a healthy SEO profile. -> Justification: Shows the interconnectedness of metrics in a visually compelling way. (Chart.js)
         - Report Info: Pitfalls -> Goal: Inform/Warn -> Viz/Method: Two-column "Do/Don't" layout with icons -> Interaction: Static but highly scannable -> Justification: Quickly communicates best practices vs. mistakes. (HTML/CSS)
+        - Gemini API Integration: Content Idea Generator -> Goal: Generate new content ideas -> Viz/Method: Text input, button, text output -> Interaction: User enters topic, clicks button, LLM generates ideas. (Gemini API)
+        - Gemini API Integration: Meta Description/Title Tag Generator -> Goal: Optimize metadata -> Viz/Method: Text input, button, text output -> Interaction: User enters summary, clicks button, LLM generates meta tag. (Gemini API)
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -289,6 +291,27 @@
             box-shadow: 0 8px 20px rgba(74, 144, 226, 0.4);
         }
 
+        /* Loading spinner CSS */
+        .loading-spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid #fff;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 8px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body class="antialiased">
@@ -536,7 +559,33 @@
                         { title: 'Heading Hierarchy (H1-H6)', text: 'Use a logical heading structure (one H1 per page, followed sequentially by H2s, H3s) to improve readability and signal content structure.' },
                         { title: 'Clean URL Structures', text: 'Create short, descriptive URLs with keywords. Use hyphens to separate words and avoid long, random identifiers.' },
                         { title: 'Natural Keyword & Entity Usage', text: 'Integrate keywords, synonyms, and related terms naturally. Avoid "keyword stuffing" which harms readability and can lead to penalties.' }
-                    ]
+                    ],
+                    llm_features: `
+                        <div class="mt-8 pt-8 border-t border-gray-200">
+                            <h3 class="text-2xl font-bold mb-4 text-[#F5A623]">✨ AI-Powered SEO Tools ✨</h3>
+                            <div class="space-y-6">
+                                <div class="bg-gray-50 p-6 rounded-lg shadow-inner">
+                                    <h4 class="font-bold text-xl mb-3 text-gray-800">Content Idea Generator</h4>
+                                    <p class="text-gray-600 mb-4">Enter a broad topic or keyword, and let AI suggest fresh content ideas or blog post titles.</p>
+                                    <textarea id="contentIdeaInput" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A90E2] focus:border-transparent mb-3" rows="3" placeholder="e.g., 'sustainable living', 'digital marketing trends 2025'"></textarea>
+                                    <button id="generateContentIdeasBtn" class="bg-[#4A90E2] text-white font-bold py-2 px-5 rounded-full hover:bg-blue-600 transition duration-300 flex items-center justify-center">
+                                        Generate Ideas <span class="loading-spinner hidden"></span>
+                                    </button>
+                                    <div id="contentIdeaOutput" class="mt-4 p-4 bg-white border border-gray-200 rounded-md text-gray-700 min-h-[50px] overflow-auto"></div>
+                                </div>
+
+                                <div class="bg-gray-50 p-6 rounded-lg shadow-inner">
+                                    <h4 class="font-bold text-xl mb-3 text-gray-800">Meta Description / Title Tag Generator</h4>
+                                    <p class="text-gray-600 mb-4">Provide a brief summary of your content or main keywords, and AI will craft an optimized meta description or title tag.</p>
+                                    <textarea id="metaTagInput" class="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-[#4A90E2] focus:border-transparent mb-3" rows="3" placeholder="e.g., 'Comprehensive guide to local SEO for small businesses' or 'local SEO, small business, marketing'"></textarea>
+                                    <button id="generateMetaTagBtn" class="bg-[#4A90E2] text-white font-bold py-2 px-5 rounded-full hover:bg-blue-600 transition duration-300 flex items-center justify-center">
+                                        Generate Meta Tag <span class="loading-spinner hidden"></span>
+                                    </button>
+                                    <div id="metaTagOutput" class="mt-4 p-4 bg-white border border-gray-200 rounded-md text-gray-700 min-h-[50px] overflow-auto"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `
                 },
                 technical: {
                     title: "Technical Foundations",
@@ -563,7 +612,7 @@
             const optimizationContent = document.getElementById('optimization-content');
             function updateOptimizationContent(topic) {
                 const data = optimizationData[topic];
-                optimizationContent.innerHTML = `
+                let htmlContent = `
                     <div class="bg-gray-50 p-8 rounded-lg">
                         <h3 class="text-2xl font-bold mb-2 text-[#4A90E2]">${data.title}</h3>
                         <p class="mb-6 text-gray-600">${data.description}</p>
@@ -575,7 +624,15 @@
                                 </div>
                             `).join('')}
                         </div>
-                    </div>`;
+                `;
+
+                // Add LLM features only to the 'onpage' tab
+                if (topic === 'onpage' && data.llm_features) {
+                    htmlContent += data.llm_features;
+                }
+                htmlContent += `</div>`; // Close the main bg-gray-50 div
+
+                optimizationContent.innerHTML = htmlContent;
                  document.querySelectorAll('.opt-tab-button').forEach(btn => {
                     const isActive = btn.dataset.opt === topic;
                     btn.classList.toggle('active', isActive);
@@ -583,6 +640,82 @@
                     btn.classList.toggle('border-[#4A90E2]', isActive);
                     btn.classList.toggle('text-gray-600', !isActive);
                 });
+
+                // Attach event listeners for LLM features if 'onpage' tab is active
+                if (topic === 'onpage') {
+                    const generateContentIdeasBtn = document.getElementById('generateContentIdeasBtn');
+                    const contentIdeaInput = document.getElementById('contentIdeaInput');
+                    const contentIdeaOutput = document.getElementById('contentIdeaOutput');
+
+                    const generateMetaTagBtn = document.getElementById('generateMetaTagBtn');
+                    const metaTagInput = document.getElementById('metaTagInput');
+                    const metaTagOutput = document.getElementById('metaTagOutput');
+
+                    // Function to handle Gemini API calls
+                    async function callGeminiAPI(prompt, outputElement, buttonElement) {
+                        outputElement.innerHTML = ''; // Clear previous output
+                        const spinner = buttonElement.querySelector('.loading-spinner');
+                        buttonElement.disabled = true;
+                        spinner.classList.remove('hidden');
+
+                        let chatHistory = [];
+                        chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                        const payload = { contents: chatHistory };
+                        const apiKey = ""; // Canvas will provide this at runtime
+                        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                        try {
+                            const response = await fetch(apiUrl, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify(payload)
+                            });
+                            const result = await response.json();
+
+                            if (result.candidates && result.candidates.length > 0 &&
+                                result.candidates[0].content && result.candidates[0].content.parts &&
+                                result.candidates[0].content.parts.length > 0) {
+                                const text = result.candidates[0].content.parts[0].text;
+                                outputElement.innerText = text;
+                            } else {
+                                outputElement.innerText = "Error: Could not get a valid response from the AI.";
+                                console.error("Unexpected API response structure:", result);
+                            }
+                        } catch (error) {
+                            outputElement.innerText = `Error: ${error.message}. Please try again.`;
+                            console.error("Error calling Gemini API:", error);
+                        } finally {
+                            buttonElement.disabled = false;
+                            spinner.classList.add('hidden');
+                        }
+                    }
+
+                    // Event listener for Content Idea Generator
+                    if (generateContentIdeasBtn) {
+                        generateContentIdeasBtn.addEventListener('click', () => {
+                            const input = contentIdeaInput.value.trim();
+                            if (input) {
+                                const prompt = `Generate 5 unique and engaging blog post titles or content ideas related to "${input}" for an SEO-focused website. Provide them as a numbered list.`;
+                                callGeminiAPI(prompt, contentIdeaOutput, generateContentIdeasBtn);
+                            } else {
+                                contentIdeaOutput.innerText = "Please enter a topic or keyword.";
+                            }
+                        });
+                    }
+
+                    // Event listener for Meta Description / Title Tag Generator
+                    if (generateMetaTagBtn) {
+                        generateMetaTagBtn.addEventListener('click', () => {
+                            const input = metaTagInput.value.trim();
+                            if (input) {
+                                const prompt = `Generate a concise (under 160 characters) meta description and a compelling title tag (under 60 characters) for content based on this input: "${input}". Provide both.`;
+                                callGeminiAPI(prompt, metaTagOutput, generateMetaTagBtn);
+                            } else {
+                                metaTagOutput.innerText = "Please enter content summary or keywords.";
+                            }
+                        });
+                    }
+                }
             }
              document.querySelector('.opt-tab-button').parentElement.addEventListener('click', e => {
                 if(e.target.matches('.opt-tab-button')) {
